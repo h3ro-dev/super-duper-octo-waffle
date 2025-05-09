@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soggy Cereal Co. - Embrace the Squish!</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- Favicon (e.g., a droopy cereal flake) -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Chalkduster', 'Bradley Hand', cursive; /* Playful font */
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #e0f7fa; /* Light blue, like milk */
+            color: #333;
+        }
+
+        header {
+            background: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 50px;
+            margin-right: 10px;
+            /* You'll need to provide a real soggy-logo.png or remove/comment this out */
+            /* For testing, let's add a placeholder style if image isn't there */
+            background-color: #ccc; 
+            border-radius: 50%;
+            display: inline-block;
+            width: 50px;
+        }
+
+        .logo h1 {
+            font-size: 1.8em;
+            color: #0277bd; /* Deeper blue */
+            margin: 0;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #0277bd;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #ffab00; /* Orangey-yellow, like cereal */
+        }
+
+        .cart-icon {
+            font-size: 1.5em;
+            color: #0277bd;
+            cursor: pointer;
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        section {
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        section h2 {
+            text-align: center;
+            color: #01579b; /* Darker blue */
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+
+        #hero {
+            text-align: center;
+            background: linear-gradient(to bottom, #81d4fa, #e0f7fa); /* Gradient sky blue */
+            color: #01579b;
+            padding: 60px 20px;
+            border-radius: 0 0 8px 8px; /* Rounded bottom corners */
+        }
+
+        #hero h2 {
+            font-size: 2.8em;
+            color: #fff;
+            text-shadow: 1px 1px 2px #01579b;
+        }
+
+        #hero p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            background-color: #ffab00; /* Cereal orange/yellow */
+            color: #fff;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background-color: #ff8f00; /* Darker orange */
+            transform: translateY(-2px);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            /* Placeholder styling for product images */
+            background-color: #ddd; 
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .product-card h3 {
+            color: #0277bd;
+            margin-top: 0;
+        }
+
+        .price {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #00c853; /* Green for price */
+            margin: 10px 0;
+        }
+
+        .add-to-cart-btn {
+            background-color: #0288d1; /* Medium blue */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #0277bd;
+        }
+
+        .sogginess-level {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .sogginess-level .level-bar {
+            display: inline-block;
+            height: 10px;
+            background-color: #81d4fa; /* Light blue bar */
+            border-radius: 5px;
+            vertical-align: middle;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .feature img {
+            width: 60px; 
+            height: 60px;
+            margin-bottom: 10px;
+            /* Placeholder styling for feature icons */
+            background-color: #b3e5fc; 
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        #sogginess-visualizer, #testimonials {
+            text-align: center;
+        }
+
+        /* D3 Containers - basic styling, D3 will do the rest */
+        #hero-animation-container {
+            min-height: 150px; /* For D3 animation */
+            margin-top: 20px;
+            /* border: 1px dashed #ccc; /* For layout visualization */
+        }
+
+        #d3-sogginess-chart-container {
+            min-height: 300px; /* For D3 chart */
+            margin: 20px auto;
+            max-width: 700px;
+            /* border: 1px dashed #ccc; /* For layout visualization */
+        }
+        #d3-sogginess-chart-container svg .bar-label { /* Target D3 generated text */
+            fill: #333;
+            font-size: 12px;
+        }
+
+
+        #d3-testimonial-bubbles-container {
+            min-height: 250px; /* For D3 testimonials */
+            margin-bottom: 20px;
+            /* border: 1px dashed #ccc; */
+        }
+        #d3-testimonial-bubbles-container svg text { /* Target D3 generated text */
+            text-anchor: middle;
+            font-size: 10px;
+            fill: white;
+        }
+
+
+        .testimonial-static blockquote {
+            background: #e3f2fd; /* Very light blue */
+            border-left: 5px solid #0288d1;
+            margin: 20px auto;
+            padding: 15px 20px;
+            max-width: 600px;
+            font-style: italic;
+        }
+
+        .testimonial-static footer {
+            text-align: right;
+            font-style: normal;
+            font-weight: bold;
+            color: #01579b;
+        }
+
+
+        #contact form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #contact input, #contact textarea {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        footer {
+            background-color: #01579b; /* Dark blue footer */
+            color: #e0f7fa; /* Light blue text */
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        footer a {
+            color: #ffab00; /* Cereal orange links */
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <!-- Use a placeholder if you don't have soggy-logo.png -->
+            <img src="soggy-logo.png" alt="Soggy Cereal Co. Logo">
+            <h1>Soggy Cereal Co.</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#products">Our Cereals</a></li>
+                <li><a href="#why-soggy">Why Soggy?</a></li>
+                <li><a href="#sogginess-visualizer">Sogginess Scale</a></li>
+                <li><a href="#testimonials">Rave Reviews</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="cart-icon">🛒 <span id="cart-count">0</span></div>
+    </header>
+
+    <main>
+        <section id="hero">
+            <h2>The Future of Breakfast is... Moist!</h2>
+            <p>Tired of waiting for that perfect level of sogginess? We've done the work for you. Dive in!</p>
+            <a href="#products" class="cta-button">Discover Your Sog!</a>
+            <div id="hero-animation-container">
+                <!-- D3.js: Animated falling cereal flakes getting progressively soggier -->
+            </div>
+        </section>
+
+        <section id="products">
+            <h2>Our Perfectly Pre-Sogged Cereals</h2>
+            <div class="product-grid">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <img src="classic-sog.jpg" alt="The Classic Sog Cereal">
+                    <h3>The Classic Sog</h3>
+                    <p>Corn flakes, but make them wonderfully waterlogged. Sweet & satisfyingly squishy.</p>
+                    <div class="sogginess-level" data-level="7">
+                        Sogginess: <span class="level-bar" style="width: 70%;"></span> (Perfectly Damp)
+                    </div>
+                    <p class="price">$7.99</p>
+                    <button class="add-to-cart-btn" data-product-id="1" data-product-name="The Classic Sog">Add to Cart</button>
+                </div>
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <img src="berry-bogged.jpg" alt="Berry Blissfully Bogged Cereal">
+                    <h3>Berry Blissfully Bogged</h3>
+                    <p>Fruity O's that have taken a long, luxurious bath. Berry good, berry soft.</p>
+                    <div class="sogginess-level" data-level="8">
+                        Sogginess: <span class="level-bar" style="width: 80%;"></span> (Wonderfully Waterlogged)
+                    </div>
+                    <p class="price">$8.49</p>
+                    <button class="add-to-cart-btn" data-product-id="2" data-product-name="Berry Blissfully Bogged">Add to Cart</button>
+                </div>
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <img src="choco-submerge.jpg" alt="Choco-Chunk Submerge Cereal">
+                    <h3>Choco-Chunk Submerge</h3>
+                    <p>Cocoa puffs surrendered to the milky depths. Rich, chocolatey, and delightfully droopy.</p>
+                    <div class="sogginess-level" data-level="9">
+                        Sogginess: <span class="level-bar" style="width: 90%;"></span> (Utterly Saturated)
+                    </div>
+                    <p class="price">$8.99</p>
+                    <button class="add-to-cart-btn" data-product-id="3" data-product-name="Choco-Chunk Submerge">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="why-soggy">
+            <h2>Why Choose Pre-Sogged?</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <img src="icon-clock.svg" alt="Time Saving Icon">
+                    <h3>No More Waiting!</h3>
+                    <p>Your cereal achieves peak sogginess *before* it even hits your bowl.</p>
+                </div>
+                <div class="feature">
+                    <img src="icon-flavor.svg" alt="Flavor Infusion Icon">
+                    <h3>Peak Flavor Infusion</h3>
+                    <p>Milk (or your chosen liquid) has fully permeated every flake for maximum taste.</p>
+                </div>
+                <div class="feature">
+                    <img src="icon-texture.svg" alt="Perfect Texture Icon">
+                    <h3>The Perfect Texture (for some!)</h3>
+                    <p>If you love soft, yielding cereal, you've found your breakfast heaven.</p>
+                </div>
+                <div class="feature">
+                     <img src="icon-eco.svg" alt="Eco Friendly (sort of) Icon">
+                    <h3>Eco-Friendly (Sort Of)</h3>
+                    <p>We use... uh... recycled water? (Okay, maybe not, but it sounds good!)</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="sogginess-visualizer">
+            <h2>Interactive Sogginess Scale</h2>
+            <p>Curious about the science of sog? Explore our interactive scale! (This is where D3 shines)</p>
+            <div id="d3-sogginess-chart-container">
+                <!-- D3.js: Interactive chart showing sogginess levels, maybe transition effects -->
+            </div>
+            <p>Each of our cereals is expertly calibrated on the International Sogginess Index (ISI).</p>
+        </section>
+
+        <section id="testimonials">
+            <h2>What Our Soggy Fans Say</h2>
+            <div id="d3-testimonial-bubbles-container">
+                <!-- D3.js: Testimonials could appear in animated "milk splash" bubbles or a force-directed graph -->
+            </div>
+            <div class="testimonial-static"> <!-- Fallback or additional static testimonials -->
+                <blockquote>
+                    "I used to set an alarm 10 minutes early just to let my cereal sog. Not anymore! Thanks, Soggy Cereal Co.!"
+                    <footer>- Happy Hanna</footer>
+                </blockquote>
+                <blockquote>
+                    "My dentures thank you! Finally, a cereal I can enjoy without the crunch."
+                    <footer>- Grateful Gary</footer>
+                </blockquote>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Got a Soggy Suggestion?</h2>
+            <p>We're always looking to expand our line of perfectly pre-sogged delights. Drop us a line!</p>
+            <form action="#">
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <textarea placeholder="Your Soggy Idea or Question" rows="5" required></textarea>
+                <button type="submit" class="cta-button">Send Message</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Soggy Cereal Co. All rights reserved. May contain actual sogginess.</p>
+        <p>Follow us on Sog-cial Media: <a href="#">Instasog</a> | <a href="#">SogBook</a> | <a href="#">Switter</a></p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Basic Cart Functionality ---
+            const cartCountElement = document.getElementById('cart-count');
+            let cartItemCount = 0;
+            const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    cartItemCount++;
+                    cartCountElement.textContent = cartItemCount;
+                    // You'd typically add more complex cart logic here
+                    alert(`${button.dataset.productName} added to cart! (Virtually)`);
+                });
+            });
+
+            // --- D3.js Visualizations ---
+
+            // 1. Hero Animation: Falling Soggy Cereal Flakes
+            const heroAnimationContainer = d3.select("#hero-animation-container");
+            if (heroAnimationContainer.node()) { // Check if element exists
+                const svgHeroWidth = heroAnimationContainer.node().getBoundingClientRect().width || 300; // Get width or default
+                const svgHero = heroAnimationContainer.append("svg")
+                    .attr("width", svgHeroWidth)
+                    .attr("height", 150);
+
+                const numFlakes = 30;
+                const flakeData = d3.range(numFlakes).map(() => ({
+                    x: Math.random() * svgHeroWidth,
+                    y: -Math.random() * 100, // Start above screen
+                    size: Math.random() * 10 + 5,
+                    sogginess: Math.random() // 0 (crisp) to 1 (soggy)
+                }));
+
+                const flakes = svgHero.selectAll(".flake")
+                    .data(flakeData)
+                    .enter().append("ellipse")
+                    .attr("class", "flake")
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y)
+                    .attr("rx", d => d.size)
+                    .attr("ry", d => d.size * (1 - d.sogginess * 0.5)) // Soggier flakes are flatter
+                    .style("fill", d => d3.interpolateYlOrBr(d.sogginess * 0.8 + 0.2)) // Soggier = browner
+                    .style("opacity", 0.8);
+
+                function fall() {
+                    flakes.transition()
+                        .duration(2000 + Math.random() * 2000)
+                        .ease(d3.easeQuadIn)
+                        .attr("cy", 200) // Fall to bottom
+                        .style("opacity", d => 1 - d.sogginess) // Soggier flakes might "dissolve"
+                        .on("end", function(event, d) { // D3 v6+ uses (event, d)
+                            // Reset flake to top
+                            d3.select(this)
+                                .attr("cy", -Math.random() * 100)
+                                .attr("cx", Math.random() * svgHeroWidth)
+                                .datum(Object.assign(d, { sogginess: Math.random() })) // Update sogginess in datum
+                                .style("fill", d => d3.interpolateYlOrBr(d.sogginess * 0.8 + 0.2))
+                                .attr("ry", d => d.size * (1 - d.sogginess * 0.5));
+                            // Check if this is the last flake of the current transition batch to restart fall
+                            // This is a simplified restart; for robust looping, manage transitions more carefully
+                            if (d3.select(this.parentNode).selectAll(".flake").filter(function() { return d3.active(this); }).size() === 0) {
+                                fall();
+                            }
+                        });
+                }
+                if(flakes.size() > 0) fall(); // Start animation if flakes exist
+            }
+
+
+            // 2. Interactive Sogginess Scale
+            const sogginessChartContainer = d3.select("#d3-sogginess-chart-container");
+            if (sogginessChartContainer.node()) {
+                const productData = [
+                    { name: "Classic Sog", level: 7, color: "#fbc02d" },
+                    { name: "Berry Bogged", level: 8, color: "#e91e63" },
+                    { name: "Choco Submerge", level: 9, color: "#795548" }
+                ];
+
+                const margin = { top: 20, right: 30, bottom: 40, left: 120 };
+                let containerWidth = sogginessChartContainer.node().getBoundingClientRect().width;
+                // Ensure containerWidth is a reasonable value, otherwise default
+                containerWidth = containerWidth > 0 ? containerWidth : 600; 
+                
+                const width = containerWidth - margin.left - margin.right;
+                const height = 250 - margin.top - margin.bottom;
+
+                const svgChart = sogginessChartContainer.append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+                const x = d3.scaleLinear()
+                    .domain([0, 10]) // Sogginess scale 0-10
+                    .range([0, width]);
+
+                const y = d3.scaleBand()
+                    .domain(productData.map(d => d.name))
+                    .range([0, height])
+                    .padding(0.2);
+
+                svgChart.append("g")
+                    .attr("transform", `translate(0,${height})`)
+                    .call(d3.axisBottom(x).ticks(5).tickFormat(d => d + " ISI"));
+
+                svgChart.append("g")
+                    .call(d3.axisLeft(y));
+
+                svgChart.selectAll(".bar")
+                    .data(productData)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "bar")
+                    .attr("y", d => y(d.name))
+                    .attr("height", y.bandwidth())
+                    .attr("x", 0)
+                    .attr("width", 0) // Initial width 0 for animation
+                    .style("fill", d => d.color)
+                    .transition()
+                    .duration(1000)
+                    .delay((d, i) => i * 200)
+                    .attr("width", d => x(d.level));
+
+                // Add value labels to bars
+                svgChart.selectAll(".bar-label")
+                    .data(productData)
+                    .enter()
+                    .append("text")
+                    .attr("class", "bar-label") // CSS will style this
+                    .attr("x", d => x(d.level) + 5)
+                    .attr("y", d => y(d.name) + y.bandwidth() / 2)
+                    .attr("dy", ".35em")
+                    .style("opacity", 0) // Initial opacity 0 for animation
+                    .text(d => d.level)
+                    .transition()
+                    .duration(1000)
+                    .delay((d, i) => i * 200 + 500) // Delay after bar animation
+                    .style("opacity", 1);
+            }
+
+            // 3. D3 Testimonial Bubbles (Force-directed graph example)
+            const testimonialBubblesContainer = d3.select("#d3-testimonial-bubbles-container");
+            if (testimonialBubblesContainer.node()) {
+                const testimonials = [
+                    { id: 1, text: "Peak sog!", radius: 40, group: 1 },
+                    { id: 2, text: "So soft!", radius: 30, group: 1 },
+                    { id: 3, text: "Life changing!", radius: 50, group: 2 },
+                    { id: 4, text: "No more crunch!", radius: 35, group: 2 },
+                    { id: 5, text: "My hero!", radius: 25, group: 1 }
+                ];
+
+                let widthBubbles = testimonialBubblesContainer.node().getBoundingClientRect().width;
+                widthBubbles = widthBubbles > 0 ? widthBubbles : 500; // Default if width is 0
+                const heightBubbles = 250;
+
+                const svgBubbles = testimonialBubblesContainer.append("svg")
+                    .attr("width", widthBubbles)
+                    .attr("height", heightBubbles);
+
+                const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+                const simulation = d3.forceSimulation(testimonials)
+                    .force("charge", d3.forceManyBody().strength(15)) // Increased strength
+                    .force("center", d3.forceCenter(widthBubbles / 2, heightBubbles / 2))
+                    .force("collision", d3.forceCollide().radius(d => d.radius + 5).strength(0.7)) // Added strength
+                    .on("tick", ticked);
+
+                const nodes = svgBubbles.selectAll(".testimonial-bubble-group") // Changed selector for clarity
+                    .data(testimonials)
+                    .enter().append("g")
+                    .attr("class", "testimonial-bubble-group")
+                    .call(d3.drag()
+                          .on("start", dragstarted)
+                          .on("drag", dragged)
+                          .on("end", dragended));
+
+                nodes.append("circle")
+                    .attr("r", d => d.radius)
+                    .style("fill", d => colorScale(d.group))
+                    .style("stroke", "#fff")
+                    .style("stroke-width", 2);
+
+                nodes.append("text")
+                    .attr("dy", ".3em")
+                    // .style("text-anchor", "middle") // CSS will handle this
+                    // .style("font-size", "10px") // CSS will handle this
+                    // .style("fill", "white") // CSS will handle this
+                    .text(d => d.text.length > (d.radius / 4) ? d.text.substring(0, Math.floor(d.radius / 4) -1)+"..." : d.text) // Adjust substring based on radius
+                     .on("mouseover", function(event, d) {
+                        const textElement = d3.select(this);
+                        textElement.text(d.text).style("font-size", "12px");
+                        // Make the parent group's circle brighter
+                        d3.select(this.parentNode).select("circle").style("filter", "brightness(1.2)");
+                    })
+                    .on("mouseout", function(event, d) {
+                        const textElement = d3.select(this);
+                        textElement.text(d.text.length > (d.radius / 4) ? d.text.substring(0, Math.floor(d.radius / 4) -1)+"..." : d.text).style("font-size", null); // Revert to CSS font-size
+                        d3.select(this.parentNode).select("circle").style("filter", "none");
+                    });
+
+
+                function ticked() {
+                    nodes.attr("transform", d => `translate(${Math.max(d.radius, Math.min(widthBubbles - d.radius, d.x))}, ${Math.max(d.radius, Math.min(heightBubbles - d.radius, d.y))})`);
+                }
+
+                function dragstarted(event, d) {
+                    if (!event.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                }
+                function dragged(event, d) {
+                    d.fx = event.x;
+                    d.fy = event.y;
+                }
+                function dragended(event, d) {
+                    if (!event.active) simulation.alphaTarget(0);
+                    d.fx = null;
+                    d.fy = null;
+                }
+            }
+
+        });
+    </script>
+</body>
+</html>
